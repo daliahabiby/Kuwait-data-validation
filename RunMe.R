@@ -25,7 +25,29 @@
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+source("Code/settings.R")
+source("Code/AOI_cleaning.R")
+source("Code/ABR_cleaning.R")
 
+master_data.df <- read_dta(paste0(path2SP, 
+                        "/Presentations/Kuwait/Kuwait-data-validation/Inputs/Kuwait_2023.dta" 
+                       ))
+aoi<- read_dta(paste0(path2SP, 
+                        "/Presentations/Kuwait/Kuwait-data-validation/Inputs/Arab Opinion Index 2022.dta"
+                       ))
+AOI<- aoi%>%
+  filter(Q1 == 8)
+abar<- read_dta(paste0(path2SP, 
+                        "/Presentations/Kuwait/Kuwait-data-validation/Inputs/AB7_ENG_Release_Version6.dta"
+                       ))
+ABR<- abar%>%
+  filter(COUNTRY == 9)
+
+var_matches<- read_xlsx(paste0(path2SP, 
+                              "/Presentations/Kuwait/Kuwait-data-validation/Inputs/matches_kuwait.xlsx"
+))
+vmatch<- var_matches%>%
+  filter(!is.na(GPP_Questionnaire))
 
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
