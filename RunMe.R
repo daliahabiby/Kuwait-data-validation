@@ -28,6 +28,8 @@
 source("Code/settings.R")
 source("Code/AOI_cleaning.R")
 source("Code/ABR_cleaning.R")
+source("Code/ttest.R")
+
 
 master_data.df <- read_dta(paste0(path2SP, 
                         "/Presentations/Kuwait/Kuwait-data-validation/Inputs/Kuwait_2023.dta" 
@@ -55,53 +57,45 @@ vmatch<- var_matches%>%
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-####################################################
-# Correspondence patterns
-# 
-# 1. time_changes = t-test function
-# 2. tps_comparisson = TPS function
-# 3. tps_trend_comparisson = TPS trends function
-#
-####################################################
-
 
 # Define analysis functions
 
-time_changes.df <- time_changes(data.df = master_data.df,
-                                type    = "real",
-                                country = args[1])
+source("Code/data_prep.R")
 
-tps_comparisson.df <- TPS_function(country = args[1],
-                                   gpp     = master_data.df,
-                                   tps     = TPS.df,
-                                   mat     = metadata
-                                   )
+full       <-  variables%>%
+                        pivot_longer(cols=all_of(vars_names), names_to = "Variable")%>%
+                        group_by(Variable)%>%
+                        summarise("Mean_Value" = mean(value, na.rm=TRUE))
 
-#sociodem_comparisson.df <- sociodem_comparisson()
+nation.test <- ttest.fn(data_set.df = data_subset.df,
+                        dependent_vars = vars_names,
+                        independent_var = "nation",
+                        grupo1 = "Native",
+                        grupo2 = "Foreign")
+gender.test <- ttest.fn(data_set.df = data_subset.df,
+                        dependent_vars = vars_names,
+                        independent_var = "gend",
+                        grupo1 = "Male",
+                        grupo2 = "Female")
+financial.test <- ttest.fn(data_set.df = data_subset.df,
+                        dependent_vars = vars_names,
+                        independent_var = "fin",
+                        grupo1 = "Financially Secure",
+                        grupo2 = "Financially Insecure")
 
-#missing_values.df<- missing_values(data= master_data.df, 
-#                                   country= country)
+
 
 # List of analysis functions
-
-if(type_data == "pretest") {
   
   analysis_functions <- list(
-    time_changes = time_changes.df,
-    tps_comparisson = tps_comparisson.df
+    overall = full,
+    nationality = nation.test,
+    gender = gender.test,
+    financial = financial.test
     #sociodem_comparisson = sociodem_comparisson.df
     )
   
-} else {
-  
-  analysis_functions <- list(
-    time_changes = time_changes.df,
-    tps_comparisson = tps_comparisson.df,
-    tps_trend_comparisson = tps_trend_comparisson.df,
-    sociodem_comparisson = sociodem_comparisson.df
-  )
-  
-}
+
 
 analysis.list <- analysis_functions
 
@@ -112,14 +106,7 @@ analysis.list <- analysis_functions
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-
-## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-##
-## 3. Outcomes function                                                                      ----
-##
-## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
+openxlsx::write.xlsx(analysis.list,
+                     paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Kuwait.xlsx"
+                           ))
 
