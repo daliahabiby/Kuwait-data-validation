@@ -30,6 +30,10 @@ library(pacman)
 
 p_load(char = c(
   
+  # Visualizations
+  "showtext", "ggtext", "ggsankey", "ggrepel", "ggplotify", "gridExtra", "ggradar2", "patchwork", 
+  "waffle", "ggh4x",
+  
   # Data Loading
   "haven", "readxl", "writexl", "haven", "rio",
   
@@ -239,3 +243,98 @@ newnames<- c("Fundamental Freedoms - People can express opinion against the gove
              "Open Government - Did you receive the information that you requested?",
              "Open Government - Approximately how long did it take to receive the information that you requested?",
              "Open Government - Did you have to pay any additional amount above the official cost or give anything of value in order to obtain the information?")
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 5.  Fonts                                                                                                ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#Loading fonts
+
+path2fonts<- paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Fonts/")
+font_add(family     = "Lato Full",
+         regular    = paste0(path2fonts, "Lato-Regular.ttf"),
+         italic     = paste0(path2fonts, "Lato-LightItalic.ttf"),
+         bold       = paste0(path2fonts, "Lato-Bold.ttf"),
+         bolditalic = paste0(path2fonts, "Lato-BoldItalic.ttf"))
+font_add(family  = "Lato Light",
+         regular = paste0(path2fonts, "Lato-Light.ttf"))
+font_add(family  = "Lato Black",
+         regular = paste0(path2fonts, "Lato-Black.ttf"))
+font_add(family  = "Lato Black Italic",
+         regular = paste0(path2fonts, "Lato-BlackItalic.ttf"))
+font_add(family  = "Lato Medium",
+         regular = paste0(path2fonts, "Lato-Medium.ttf"))
+showtext_auto()
+
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 6.  WJP theme                                                                                            ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+WJP_theme <- function() {
+  theme(panel.background   = element_blank(),
+        plot.background    = element_blank(),
+        panel.grid.major   = element_line(size     = 0.25,
+                                          colour   = "#5e5c5a",
+                                          linetype = "dashed"),
+        panel.grid.minor   = element_blank(),
+        axis.title.y       = element_text(family   = "Lato Full",
+                                          face     = "plain",
+                                          size     = 3.514598*.pt,
+                                          color    = "#524F4C",
+                                          margin   = margin(0, 10, 0, 0)),
+        axis.title.x       = element_text(family   = "Lato Full",
+                                          face     = "plain",
+                                          size     = 3.514598*.pt,
+                                          color    = "#524F4C",
+                                          margin   = margin(10, 0, 0, 0)),
+        axis.text.y        = element_text(family   = "Lato Full",
+                                          face     = "plain",
+                                          size     = 3.514598*.pt,
+                                          color    = "#524F4C"),
+        axis.text.x = element_text(family = "Lato Full",
+                                   face   = "plain",
+                                   size   = 3.514598*.pt,
+                                   color  = "#524F4C"),
+        axis.ticks  = element_blank(),
+        plot.margin  = unit(c(0, 0, 0, 0), "points")
+  ) 
+}
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 7.  Color Palette                                                                                        ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+mainCOLOR      <- c("#2a2a9A")
+countryPalette <- c("#2a2a94", "#a90099", "#3273ff", "#fa4d57", "#9d61f2", "#43a9a7", "#efa700", "#2c6d4f")
+binPalette     <- c("#003b8a", "#fa4d57")
+barsPalette    <- c("#2a2a9A", "#E2E2F7")
+glinesPalette  <- c("#2a2a94", "#a90099", "#3273ff")
+rosePalette    <- c("#20204a", "#12006b", "#2e2e95", "#4e43dd", "#756ef9", "#9c94ff", "#b1a6ff",
+                    "#cfb3ff", "#e2a4ff", "#f2aadc", "#ffd7f5")
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 8.  Creating a saving function                                                                           ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+saveIT.fn <- function(chart, n, suffix = NULL, w, h) {
+  ggsave(plot   = chart,
+         file   = file.path("Outputs", 
+                            str_replace_all(mainCountry, " ", "_"),
+                            paste0("imgChart", n),
+                            paste0("figure_", n, suffix, ".svg"),
+                            fsep = "/"), 
+         width  = w, 
+         height = h,
+         units  = "mm",
+         dpi    = 72,
+         device = "svg")
+} 
