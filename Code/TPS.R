@@ -1,6 +1,6 @@
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
-## Script:            EU Data Validation-  TPS Threshold Comparison
+## Script:            Kuwait Data Validation-  TPS Threshold Comparison
 ##
 ## Author:            Dalia Habiby   (dhabiby@worldjusticeproject.org)
 ##
@@ -16,11 +16,6 @@
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
- #gpp<- master_data.df
- #tps<- TPS.df
- #country<- "Cyprus"
- #mat<- metadata
 
 TPS_function<- function(gpp, tps, country, mat){
   

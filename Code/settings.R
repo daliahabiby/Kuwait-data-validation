@@ -1,5 +1,5 @@
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-## Project:           EU-S Data Validation
+## Project:           Kuwait Data Validation
 ##
 ## Script:            Pre-settings
 ##
@@ -137,32 +137,18 @@ return(normalized)
 ##
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-gpp_vars<-c("JSE_indjudges", "ROL_courtrulings_imp", "ORC_govtefforts", "ORC_impartial_measures", "CPA_freevote", 
-           "CPA_cleanelec_local", "CPA_media_freeop", "CPB_freexp_cso", "CPA_freepolassoc", "CPB_freexp", "PAB_emergpower",
-           "PAB_overcourts", "PAB_manipulelect", "PAB_attackmedia", "PAB_misinfo", "ROL_corruption_imp", "LEP_bribesreq",
-           "ORC_corimpact", "COR_3year_change", "BRB_health_B", "BRB_permit_B", "ROL_abusepower_imp", "ORC_pconnections",
-           "IRE_campaign", "IPR_easy2read", "IPR_rights", "IPR_easy2find", "IPR_easy2find_online", "CPA_media_freeop",
-           "CPB_freexp_cso", "CPA_freepolassoc", "CPB_freexp", "CPA_protest", "CPA_cso", "TRT_parliament", "TRT_police",
-           "TRT_pparties", "CPA_media_freeop", "CPB_freexp_cso", "CPA_freepolassoc", "CPB_freexp", "ROL_equality_imp",
-           "CTZ_laborcond_A", "CTZ_laborcond_A", "CPA_freevote", "JSE_equality", "ROL_constprotection_imp",
-           "CJP_proofburden", "SEC_orgcrime", "JSE_rightsaware", "JSE_access2assis", "JSE_access2assis", "JSE_affordcosts",
-           "JSE_quickresol", "JSE_indjudges", "JSE_enforce", "LEP_indpolinv", "COR_police", "LEP_indprosecutors", 
-           "COR_judges", "JSE_indjudges", "CJP_resprights", "CJP_fairtrial", "CJP_saferights", "COR_parliament", "COR_govt_national",
-           "COR_govt_local", "COR_police", "IRE_govtbudget", "IRE_govtcontracts", "IRE_disclosure", "SEC_walking", "CTZ_accountability",
-           "CPB_freeassoc", "CPA_law_langaval", "CPB_unions", "CPB_freexp", "CPA_cleanelec_local", "CPB_community", "CPB_freemedia",
-           "CPB_freexp_cso", "CPA_partdem_congress", "CPB_freexp_pp", "CPA_partdem_localgvt", "LEP_rightsresp", "LEP_accountability"
-           )
 
-vars<- c("q46c_G2", "q46f_G2","q46g_G2","q46c_G1","q46e_G2","q46d_G2","q46f_G1","q46a_G2","q46d_G1","q46e_G1","q46h_G2",
+gppvars<- c("q46c_G2", "q46f_G2","q46g_G2","q46c_G1","q46e_G2","q46d_G2","q46f_G1","q46a_G2","q46d_G1","q46e_G1","q46h_G2",
          "q2a","q2d","q2b","q2c","q2e","q2f","q2g","q1a","q1d","q1b","q1c","q1e","q1f","q1g", "q43_G2", "q9", "q49a" , 
          "q49b_G2", "q49e_G2", "q49c_G2", "q49e_G1", "q49c_G1", "q49b_G1", "q48f_G2", "q48h_G1", "q48g_G2", 
          "q48c_G2", "q48b_G2", "q48a_G2", "q48b_G1", "q48a_G1", "q48c_G1", "q48d_G2", "q18a", "q18c", 
          "q18d", "q18e", "q48e_G2", "q48d_G1", "q50", "q51", "q45a_G1", "q45b_G1" , "q45c_G1", 
          "q4a", "q4b", "q4c", "q4d", "q4e", "q8d", "q8f", "q17_1", "q17_2","q17_3","q17_4","q17_5","q17_6","q17_7",
-         "q17_8","q17_9", "q17_10","q17_11", "q17_12","q17_13","q17_14","q17_15", "q16a" , "q16b", "q16c", "q16d", "q16e"
+         "q17_8","q17_9", "q17_10","q17_11", "q17_12","q17_13","q17_14","q17_15", "q16a" , "q16b", "q16c", "q16d", "q16e", 
+         "q7a", "q7b", "q7c", "q5", "q6a", "q6b", "q6c"
          )
 
-vars2<- paste0(vars, "_norm")
+gppvars2<- paste0(gppvars, "_norm")
 
 newnames<- c("Fundamental Freedoms - People can express opinion against the government", 
              "Fundamental Freedoms - Civil society organizations can express opinions against the government", 
@@ -245,15 +231,11 @@ newnames<- c("Fundamental Freedoms - People can express opinion against the gove
              "Discrimination - You receive poorer service than other people at restaurants or stores", 
              "Discrimination - People act as if they think you are not smart", 
              "Discrimination - People act as if they are afraid of you", 
-             "Discrimination - You are threatened or harassed")
-
-
-kuw<- master_data.df%>%
-  select(all_of(vars2))
-
-kuw<- kuw %>% rename_at(vars(unique(vars2)), ~ unique(newnames))
-
-
-kuw <- kuw[,colSums(is.na(kuw))< (nrow(kuw)-30)]
-
-writexl::write_xlsx(kuw, "Kuwait Presentation Data.xlsx")
+             "Discrimination - You are threatened or harassed",
+             "Open Government - Detailed budget figures of government agencies", 
+             "Open Government - Copies of government contracts",
+             "Open Government - Disclosure records of senior government officials (such as financial records or property holdings)",
+             "Open Government - Have you made a request for information held and distributed by a government agency (such as government ministries, baladiya offices, law enforcement agencies, etc.) in the last 12 months?  ",
+             "Open Government - Did you receive the information that you requested?",
+             "Open Government - Approximately how long did it take to receive the information that you requested?",
+             "Open Government - Did you have to pay any additional amount above the official cost or give anything of value in order to obtain the information?")

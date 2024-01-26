@@ -1,6 +1,6 @@
 ## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##
-## Script:            EU Data Validation-  TPS Threshold Comparison
+## Script:            Kuwait Data Validation-  TPS Threshold Comparison
 ##
 ## Author:            Dalia Habiby   (dhabiby@worldjusticeproject.org)
 ##
