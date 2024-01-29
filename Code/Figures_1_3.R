@@ -383,6 +383,118 @@ figure02_01.fn <- function(nchart = 1) {
   
   # Defining data frame for plot
   data2plot <- master_data.df %>%
+    select(country, all_of(vars4plot)) %>%
+    mutate(
+      across(!country,
+             ~if_else(.x < 3, 1, 0),
+             .names = "{.col}_neg"),
+      across(all_of(vars4plot),
+             ~if_else(.x == 3 | .x == 4, 1,
+                      if_else(.x == 1 | .x == 2, 0, 
+                              NA_real_)),
+             .names = "{.col}_pos"),
+      across(all_of(vars4plot),
+             ~if_else(.x == 5, 1, 0),
+             .names = "{.col}_neither")
+    ) %>%
+    group_by(country) %>%
+    summarise(
+      across(c(ends_with("_pos"),
+               ends_with("_neg"),
+               ends_with("_neither")),
+             sum,
+             na.rm = T)
+    ) %>%
+    mutate(
+      across(ends_with("_neither"),
+             ~.x/2,
+             .names = "{.col}_pos"),
+      across(ends_with("_neither"),
+             ~.x/2,
+             .names = "{.col}_neg")
+    ) %>%
+    select(-ends_with("_neither"))
+  
+  # We need to dynamically generate the totals for each variable
+  data2plot <- map_dfr(vars4plot,
+                       function(categories) {
+                         
+                         data2plot %>%
+                           select(country, starts_with(categories)) %>%
+                           mutate(
+                             "{categories}_total" := rowSums(across(starts_with(categories)))
+                           ) %>%
+                           rename(total = ends_with("_total")) %>%
+                           pivot_longer(!c(country, total),
+                                        values_to = "abs_value",
+                                        names_to  = "category") %>%
+                           mutate(
+                             perc    = round((abs_value/total)*100, 
+                                             0),
+                             status  = case_when(
+                               str_detect(category, "_neither") ~ "Neutral",
+                               str_detect(category, "_neg")     ~ "Negative",
+                               str_detect(category, "_pos")     ~ "Positive"
+                             ),
+                             status     = factor(status, levels = c("Negative", "Positive", "Neutral")),
+                             perc       = if_else(str_detect(category, "_neg"), 
+                                                  perc*-1, 
+                                                  perc),
+                             label      = paste0(format(abs(perc),
+                                                        nsmall = 0),
+                                                 "%"),
+                             label      = if_else(status == "Neutral", NA_character_, label), 
+                             group      = str_replace_all(category, "_pos|_neg|_neither", ""),
+                             lab_status = case_when(
+                               str_detect(category, "_pos") ~ "POS",
+                               str_detect(category, "_neg") ~ "NEG"
+                             )
+                           )
+                       }) %>%
+    group_by(country, group, lab_status) %>%
+    mutate(lab_pos = sum(perc))
+  
+  
+  # Customizing colorPalette for plot
+  colors4plot <- c("#003b8a")
+  names(colors4plot) <- c("Kuwait")
+  
+  
+  
+  data2plot$figures<- data2plot$country
+  data2plot<- data2plot%>%
+    filter(!is.na(country))
+  data2plot$group<- ifelse(data2plot$group == "q7a", "Detailed budget figures of government agencies", 
+                           ifelse(data2plot$group == "q7b", "Copies of government contracts", "Disclosure records of senior government officials"))
+  data2plot<- data2plot%>%
+    filter(status == "Negative")
+  data2plot$perc<- (-1*data2plot$perc) 
+  
+  # Applying plotting function
+  chart <- compared_bars(data.df      = data2plot,
+                        value2plot     = "perc",
+                   grouping_var   = "figures",
+                   categories_grouping_var  = c("Kuwait"),
+                   label_figures = "label",
+                   colors4plot    = colors4plot,
+                   labels_var     = "group",
+                   order = F,
+                   title = "Open Government: Information Requests",
+                   subtitle = "Percentage of people who believe it is likely or very likely to recieve \ngovernment information upon request based on whether or not \nthey have requested government information in the last 12 months",
+                   legend = "Requested government \ninformation in the \nlast 12 months",
+                   nbars = 2
+  )
+  
+  ggsave("../Outcomes/Figure2/Figure2_1.svg", width = 225.8689, height = 76.23357, units  = "mm")
+}
+
+figure02_02.fn <- function(nchart = 1) {
+  
+  vars4plot <- c("q7a", "q7b", "q7c")
+  
+  
+  # Defining data frame for plot
+  data2plot <- master_data.df %>%
     select(q5, all_of(vars4plot)) %>%
     mutate(
       q5 = ifelse(q5 == 0, "No", ifelse(q5== 1, "Yes", NA_character_)),
@@ -473,20 +585,20 @@ figure02_01.fn <- function(nchart = 1) {
   
   # Applying plotting function
   chart <- compared_bars(data.df      = data2plot,
-                        value2plot     = "perc",
-                   grouping_var   = "figures",
-                   categories_grouping_var  = c("Yes", "No"),
-                   label_figures = "label",
-                   colors4plot    = colors4plot,
-                   labels_var     = "group",
-                   order = F,
-                   title = "Open Government Based On ",
-                   subtitle = "Percentage of people who believe it is likely or very likely to recieve government information",
-                   legend = "Requested government information \n in the last 12 months",
-                   nbars = 2
+                         value2plot     = "perc",
+                         grouping_var   = "figures",
+                         categories_grouping_var  = c("Yes", "No"),
+                         label_figures = "label",
+                         colors4plot    = colors4plot,
+                         labels_var     = "group",
+                         order = F,
+                         title = "Open Government: Information Requests",
+                         subtitle = "Percentage of people who believe it is likely or very likely to recieve \ngovernment information upon request based on whether or not \nthey have requested government information in the last 12 months",
+                         legend = "Requested government \ninformation in the \nlast 12 months",
+                         nbars = 2
   )
   
-  ggsave("../Outcomes/Figure2/Figure2_1.svg", width = 225.8689, height = 56.23357, units  = "mm")
+  ggsave("../Outcomes/Figure2/Figure2_2.svg", width = 225.8689, height = 76.23357, units  = "mm")
 }
 
 figure03_01.fn <- function(nchart = 1, PAR = F) {
