@@ -112,26 +112,140 @@ figure01_01.fn <- function(nchart = 1, PAR = F) {
   
   
   data2plot$country<- ifelse(data2plot$country == "Kuwait", "Overall", NA_character_)
+  ###########
+  
+  data2plot2 <- master_data.df %>%
+    select(nation, all_of(vars4plot)) %>%
+    mutate(
+      across(!nation,
+             ~if_else(.x < 3, 1, 0),
+             .names = "{.col}_neg"),
+      across(all_of(vars4plot),
+             ~if_else(.x == 3 | .x == 4, 1,
+                      if_else(.x == 1 | .x == 2, 0, 
+                              NA_real_)),
+             .names = "{.col}_pos"),
+      across(all_of(vars4plot),
+             ~if_else(.x == 5, 1, 0),
+             .names = "{.col}_neither")
+    ) %>%
+    group_by(nation) %>%
+    summarise(
+      across(c(ends_with("_pos"),
+               ends_with("_neg"),
+               ends_with("_neither")),
+             sum,
+             na.rm = T)
+    ) %>%
+    mutate(
+      across(ends_with("_neither"),
+             ~.x/2,
+             .names = "{.col}_pos"),
+      across(ends_with("_neither"),
+             ~.x/2,
+             .names = "{.col}_neg")
+    ) %>%
+    select(-ends_with("_neither"))
+  
+  # We need to dynamically generate the totals for each variable
+  data2plot2 <- map_dfr(vars4plot,
+                       function(categories) {
+                         
+                         data2plot2 %>%
+                           select(nation, starts_with(categories)) %>%
+                           mutate(
+                             "{categories}_total" := rowSums(across(starts_with(categories)))
+                           ) %>%
+                           rename(total = ends_with("_total")) %>%
+                           pivot_longer(!c(nation, total),
+                                        values_to = "abs_value",
+                                        names_to  = "category") %>%
+                           mutate(
+                             perc    = round((abs_value/total)*100, 
+                                             0),
+                             status  = case_when(
+                               str_detect(category, "_neither") ~ "Neutral",
+                               str_detect(category, "_neg")     ~ "Negative",
+                               str_detect(category, "_pos")     ~ "Positive"
+                             ),
+                             status     = factor(status, levels = c("Negative", "Positive", "Neutral")),
+                             perc       = if_else(str_detect(category, "_neg"), 
+                                                  perc*-1, 
+                                                  perc),
+                             label      = paste0(format(abs(perc),
+                                                        nsmall = 0),
+                                                 "%"),
+                             label      = if_else(status == "Neutral", NA_character_, label), 
+                             group      = str_replace_all(category, "_pos|_neg|_neither", ""),
+                             lab_status = case_when(
+                               str_detect(category, "_pos") ~ "POS",
+                               str_detect(category, "_neg") ~ "NEG"
+                             )
+                           )
+                       }) %>%
+    group_by(nation, group, lab_status) %>%
+    mutate(lab_pos = sum(perc))
+  
+  
+
+  data2plot2$nation<- ifelse(data2plot2$nation == 1, "Kuwaiti", "Foreign")
+  data2plot2<- rename(data2plot2, c("country" = "nation"))
+  
+  data2plot3<- rbind(data2plot, data2plot2)
+  
+  data2plot3$status<- ifelse(data2plot3$status == "Positive", "It is more important \nfor citizens to be able \nto hold government accountable, \neven if that means it makes \ndecisions more slowly.", ifelse(data2plot3$status == "Negative", "It is more important \nto have a government \nthat can get things done, \neven if we have no influence \nover what it does.", "Agree with neither \nstatement."))
+  
+  # Customizing colorPalette for plot
+  colors4plot <- c(binPalette, "#A6A8AA")
+  names(colors4plot) <- c("It is more important \nto have a government \nthat can get things done, \neven if we have no influence \nover what it does.", "It is more important \nfor citizens to be able \nto hold government accountable, \neven if that means it makes \ndecisions more slowly.", "Agree with neither \nstatement.")
   
   # Applying plotting function
-  chart <- divbars(data           = data2plot,
+  chart <- divbars(data           = data2plot3,
                    target_var     = "perc",
                    grouping_var   = "country",
                    diverging_var  = "status",
                    negative_value = "Negative",
                    colors         = colors4plot,
                    labels     = "label",
-                   lab_pos =  "lab_pos"
+                   lab_pos =  "lab_pos",
+                   title = "Open Government: Information Requests",
+                   subtitle = "Percentage of people who believe it is likely or very likely \nto recieve government information upon request",
+                   legend = "Requested government \ninformation in the \nlast 12 months",
+                   categories_grouping_var = c( "It is more important \nfor citizens to be able \nto hold government accountable, \neven if that means it makes \ndecisions more slowly.", "It is more important \nto have a government \nthat can get things done, \neven if we have no influence \nover what it does.","Agree with neither \nstatement.")
   )
   
-  # Saving panels
-  saveIT.fn(chart  = chart,
-            n      = nchart,
-            suffix = panelName,
-            w      = 100.8689,
-            h      = 15.464229)
   
-  ggsave("../Outcomes/Figure1/Figure1_1.svg", width = 100.8689, height = 15.464229, units  = "mm")
+  
+  
+  data2plot3<- rbind(data2plot, data2plot2)
+  
+  # Customizing colorPalette for plot
+  colors4plot <- c(binPalette, "#A6A8AA")
+  names(colors4plot) <- c("Statement 1", "Statement 2", "Neither")
+  
+  data2plot3$status<- ifelse(data2plot3$status == "Positive", "Statement 1", ifelse(data2plot3$status == "Negative", "Statement 2", "Neither"))
+  
+  data2plot3$country <- as.factor(data2plot3$country)
+  data2plot3<- data2plot3%>%
+    mutate(country = fct_relevel(country, 
+                            "Overall", "Kuwaiti", "Foreign"))
+  
+  # Applying plotting function
+  chart <- divbars(data           = data2plot3,
+                   target_var     = "perc",
+                   grouping_var   = "country",
+                   diverging_var  = "status",
+                   negative_value = "It is more important \nto have a government \nthat can get things done, \neven if we have no influence \nover what it does.",
+                   colors         = colors4plot,
+                   labels     = "label",
+                   lab_pos =  "lab_pos",
+                   title = "Authoritarianism: Government Preference",
+                   subtitle = "Percentage of people who think it is more important \nto have a government that can get things done compared \nto the percentage of people who think it is more important \nfor citizens to be able to hold the government accountable",
+                   legend = "Statement",
+                   categories_grouping_var = c("It is more important \nto have a government \nthat can get things done, \neven if we have no influence \nover what it does.","It is more important \nfor citizens to be able \nto hold government accountable, \neven if that means it makes \ndecisions more slowly.", "Agree with neither \nstatement.")
+  )
+  
+  #ggsave("../Outcomes/Figure1/Figure1_1.svg", width = 100.8689, height = 15.464229, units  = "mm")
 }
 
 
