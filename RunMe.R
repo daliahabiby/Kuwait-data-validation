@@ -29,6 +29,10 @@ source("Code/settings.R")
 source("Code/AOI_cleaning.R")
 source("Code/ABR_cleaning.R")
 source("Code/ttest.R")
+source("Code/santiago_batch.R")
+# Loading plotting functions from GitHub
+source("https://raw.githubusercontent.com/ctoruno/WJP-Data-Viz/main/loading.R")
+loadVIZ(set = "LAC")
 
 
 master_data.df <- read_dta(paste0(path2SP, 
@@ -109,4 +113,18 @@ analysis.list <- analysis_functions
 openxlsx::write.xlsx(analysis.list,
                      paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Kuwait.xlsx"
                            ))
+
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##
+## 3.  Visualizations                                                                        ----
+##
+## +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+figure3(data = master_data.df)
+figure4(data = master_data.df)
+figure5(data = master_data.df, nation = T)
+figure5(data = master_data.df, nation = F)
+figure6(data = master_data.df)
+figure7(data = master_data.df, nation = T)
+figure7(data = master_data.df, nation = F)
 
