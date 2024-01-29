@@ -474,18 +474,18 @@ figure02_01.fn <- function(nchart = 1) {
   chart <- compared_bars(data.df      = data2plot,
                         value2plot     = "perc",
                    grouping_var   = "figures",
-                   categories_grouping_var  = c("Kuwait"),
+                   categories_grouping_var  = c("Overall"),
                    label_figures = "label",
                    colors4plot    = colors4plot,
                    labels_var     = "group",
                    order = F,
                    title = "Open Government: Information Requests",
-                   subtitle = "Percentage of people who believe it is likely or very likely to recieve \ngovernment information upon request based on whether or not \nthey have requested government information in the last 12 months",
+                   subtitle = "Percentage of people who believe it is likely or very likely \nto recieve government information upon request",
                    legend = "Requested government \ninformation in the \nlast 12 months",
                    nbars = 2
   )
   
-  ggsave("../Outcomes/Figure2/Figure2_1.svg", width = 225.8689, height = 76.23357, units  = "mm")
+  ggsave("../Outcomes/Figure2/Figure2_1.svg", width = 185.8689, height = 76.23357, units  = "mm")
 }
 
 figure02_02.fn <- function(nchart = 1) {
