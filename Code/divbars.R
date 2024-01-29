@@ -36,7 +36,11 @@ divbars <- function(
     lab_pos,          # Variable containing the overall positioning of the label
     custom_order = F, # Do we want a customize order in the graph labels?
     order_var = NULL, # Variable containing the custom order for the labels
-    extreme = F       # Do we have extreme values?
+    extreme = F,       # Do we have extreme values?
+    title,
+    subtitle,
+    legend,
+    categories_grouping_var
 ){
   
   # Renaming variables in the data frame to match the function naming
@@ -73,7 +77,7 @@ divbars <- function(
   chart <- chart +
     geom_bar(stat        = "identity",
              position    = "stack",
-             show.legend = F,
+             show.legend = T,
              width       = 0.85) +
     geom_text(aes(y = lab_pos + added_space),
               size     = 3.514598,
@@ -83,8 +87,11 @@ divbars <- function(
     geom_hline(yintercept = 0,
                linetype   = "solid",
                size       = 0.5,
-               color      = "#262424") + 
-    scale_fill_manual(values  = colors)
+               color      = "#262424")+
+    labs(title    = title,
+         subtitle = subtitle, 
+         fill = legend) + 
+    scale_fill_manual(values = colors4plot, breaks = categories_grouping_var) 
   
   if (extreme == F){
     chart <- chart +
@@ -106,7 +113,21 @@ divbars <- function(
                                           color  = "#262424",
                                           hjust  = 0),
           axis.title.x      = element_blank(),
-          axis.title.y      = element_blank())
+          axis.title.y      = element_blank(),
+          plot.title          = element_text(family   = "Lato Full",
+                                             face     = "bold",
+                                             size     = 4.920437*.pt,
+                                             color    = "black",
+                                             margin   = margin(0, 0, 10, 0),
+                                             hjust    = 0), 
+          plot.subtitle      = element_text(family   = "Lato Full",
+                                            face     = "italic",
+                                            size     = 4.217518*.pt,
+                                            color    = "black",
+                                            margin   = margin(2.5, 0, 20, 0),
+                                            hjust    = 0)
+          )+
+    scale_fill_manual(name = "Statement", labels = c("Prefer a government that \ncan get things done \nover the ability to influence it.\n", "Prefer a government that \nis held accountable \nover efficiency\n", "Agree with neither \nstatement"), values = colors4plot)
   
   return(chart)
   
