@@ -245,7 +245,33 @@ figure01_01.fn <- function(nchart = 1, PAR = F) {
                    categories_grouping_var = c("It is more important \nto have a government \nthat can get things done, \neven if we have no influence \nover what it does.","It is more important \nfor citizens to be able \nto hold government accountable, \neven if that means it makes \ndecisions more slowly.", "Agree with neither \nstatement.")
   )
   
-  #ggsave("../Outcomes/Figure1/Figure1_1.svg", width = 100.8689, height = 15.464229, units  = "mm")
+  
+  ###########
+  colors4plot <- c(binPalette, "#A6A8AA")
+  names(colors4plot) <- c("Positive", "Negative", "Neutral")
+  
+
+  data2plot3$country <- as.factor(data2plot3$country)
+  data2plot3<- data2plot3%>%
+    mutate(country = fct_relevel(country, 
+                                 "Overall", "Kuwaiti", "Foreign"))
+  
+  # Applying plotting function
+  chart <- divbars(data           = data2plot3,
+                   target_var     = "perc",
+                   grouping_var   = "country",
+                   diverging_var  = "status",
+                   negative_value = "Negative",
+                   colors         = colors4plot,
+                   labels     = "label",
+                   lab_pos =  "lab_pos",
+                   title = "Authoritarianism: Government Preference",
+                   subtitle = "Percentage of people who think it is more important \nto have a government that can get things done compared \nto the percentage of people who think it is more important \nfor citizens to be able to hold the government accountable",
+                   legend = "Statement",
+                   categories_grouping_var = c("Positive", "Negative", "Neutral")
+  )
+  
+  ggsave("../Outcomes/Figure1/Figure1_1.svg", width = 225.8689, height = 76.464229, units  = "mm")
 }
 
 
