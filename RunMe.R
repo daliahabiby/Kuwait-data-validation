@@ -31,8 +31,8 @@ source("Code/ABR_cleaning.R")
 source("Code/ttest.R")
 source("Code/santiago_batch.R")
 # Loading plotting functions from GitHub
-source("https://raw.githubusercontent.com/ctoruno/WJP-Data-Viz/main/loading.R")
-loadVIZ(set = "LAC")
+#source("https://raw.githubusercontent.com/ctoruno/WJP-Data-Viz/main/loading.R")
+#loadVIZ(set = "LAC")
 
 
 master_data.df <- read_dta(paste0(path2SP, 

@@ -341,7 +341,7 @@ figure3 <- function(data){
     
   ggsave(plot     = corruption, 
          filename = paste0(path2SP, "/Presentations//Kuwait/Kuwait-data-validation/Outcomes/Figure3/corruptionActors.svg"),
-         height   = 7.5, 
+         height   = 10, 
          width    = 12
          )
 }
@@ -433,14 +433,14 @@ figure4 <- function(data) {
   
   ggsave(plot     = plot, 
          filename = paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Figure4/FundamentalFreedoms.svg"),
-         height   = 7.5, 
+         height   = 10, 
          width    = 12
   )
   
 }
 
 #figure5
-figure5 <- function(data, nation = T){
+figure5 <- function(data = master_data.df, nation = T){
   
   data2plot <- data %>%
     select(q46g_G2, q46c_G1, q46e_G2,
@@ -559,9 +559,9 @@ figure5 <- function(data, nation = T){
    }
    
   b <- bind_rows(data2plot, a)
-  colors4plot <- c("white","#ef4b4b","#1a2589")
-  
+
   if(nation == T){
+    colors4plot <- c("white","#ef4b4b","#1a2589")
     
     plot <- NM_dotsChart(data         = b,
                          target_var   = "value",
@@ -573,12 +573,12 @@ figure5 <- function(data, nation = T){
                          colors       = colors4plot,
                          order_var    = "order_value") +
       guides(fill = FALSE) +
-      labs(title = "Perceptions of Fundamental Freedoms by Provenance",
+      labs(title = "Perceptions of Fundamental Freedoms by Nationality",
            subtitle = "Percentage of respondents who believe the following statements",
-           colour = "Provenance")
+           colour = "Nationality")
     
   } else {
-    
+    colors4plot <- c("#ef4b4b","#1a2589","white")
     plot <- NM_dotsChart(data         = b,
                          target_var   = "value",
                          sd_var       = "sd_value",
@@ -588,7 +588,7 @@ figure5 <- function(data, nation = T){
                          labels_var   = "label",
                          colors       = colors4plot,
                          order_var    = "order_value") +
-      guides(fill = FALSE) +
+      #guides(fill = FALSE) +
       labs(title = "Perceptions of Fundamental Freedoms by Financial Situation",
            subtitle = "Percentage of respondents who believe the following statements",
            colour = "Financial situation")
@@ -627,13 +627,13 @@ figure5 <- function(data, nation = T){
     
     ggsave(plot     = plot, 
            filename = paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Figure4/FundamentalFreedomsNation.svg"),
-           height   = 7.5, 
+           height   = 10, 
            width    = 12)
            
   } else {
     ggsave(plot     = plot, 
            filename = paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Figure4/FundamentalFreedomsFIN.svg"),
-           height   = 7.5, 
+           height   = 10, 
            width    = 12)
   }
   
@@ -713,7 +713,7 @@ figure6 <- function(data){
                        colors4plot = colors4plot)
   ggsave(plot     = plot, 
          filename = paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Figure5/CriminalJustice.svg"),
-         height   = 7.5, 
+         height   = 10, 
          width    = 12)
   
   }
@@ -721,7 +721,7 @@ figure6 <- function(data){
 
 #Figure 7
 
-figure7 <- function(data, nation = T){
+figure7 <- function(data = master_data.df, nation = T){
   
   data2plot <- data %>%
     select(q49a, q49e_G2, q49e_G1, q49d_G1, q49c_G1,
@@ -847,9 +847,9 @@ figure7 <- function(data, nation = T){
                          labels_var   = "label",
                          colors       = colors4plot,
                          order_var    = "order_value") +
-      labs(title = "Perceptions of the Criminal Justice System by Provenance",
+      labs(title = "Perceptions of the Criminal Justice System by Nationality",
            subtitle = "Percentage of respondents who are confident that the criminal justice system...",
-           colour = "Provenance")
+           colour = "Nationality")
     
   } else {
     
@@ -868,10 +868,7 @@ figure7 <- function(data, nation = T){
   }
   
   plot <- plot +
-    guides(fill = FALSE) +
-    labs(title = " ",
-         subtitle = " ",
-         colour = " ") +
+    guides(fill = FALSE)  +
     theme(
       axis.title.y       = element_blank(),
       axis.title.x       = element_blank(),
@@ -903,13 +900,13 @@ figure7 <- function(data, nation = T){
     
     ggsave(plot     = plot, 
            filename = paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Figure5/CriminalJusticeNation.svg"),
-           height   = 7.5, 
+           height   = 10, 
            width    = 12)
     
   } else {
     ggsave(plot     = plot, 
            filename = paste0(path2SP, "/Presentations/Kuwait/Kuwait-data-validation/Outcomes/Figure5/CriminalJusticeFIN.svg"),
-           height   = 7.5, 
+           height   = 10, 
            width    = 12)
   }
 }
